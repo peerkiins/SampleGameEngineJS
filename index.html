@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>HELLO JAVASCRIPT FOP REALS</title>
+  <script type="text/javascript" src="https://momentjs.com/downloads/moment.js"></script>
+  <style type="text/css">
+    body {
+      background-color: rgb(58, 58, 58);
+      color: white;
+      padding: 0px;
+      margin: 0px;
+    }
+
+    #box1 {
+      width: 200px;
+      min-height: 200px;
+      border: 1px solid white;
+      margin-top: 10px;
+      margin-left: 10px;
+      font-size: 10px;
+    }
+  </style>
+  <script type="text/javascript">
+    var gameCanvas;
+    var gameContext;
+    var gameDeltaT = 0;
+    var elapasedT = 0;
+    var lastGameUpdate = moment().valueOf();
+    var ashImg;
+    var currentFPS = 0;
+    var lastFPS = 0;
+    var lastFPSDate = moment().valueOf();
+    var startDate;
+    const GAME_WIDTH = 1024;
+    const GAME_HEIGHT = 768;
+    const GRAVITY = -0.1;
+    const TARGET_FPS = 60;
+    var spriteX = 0;
+    var y = 0;
+    var txt = "Hello World";
+    var charX = 0;
+    var charY = 0;
+    var platformX = 0;
+    var platformY = GAME_HEIGHT - 50;
+    var platformW = 400;
+    var platformH = 50;
+    var charSpeedY = 0;
+    var radius = 50;
+    var scale = 1 * radius;
+
+    document.onreadystatechange = (ev) => {
+      if (document.readyState == "complete") {
+        initializeGame();
+      }
+    };
+
+    function initializeGame() {
+      ashImg = document.createElement("img");
+      ashImg.src = "Assets/ash.png";
+      gameCanvas = document.createElement("canvas");
+      gameCanvas.width = GAME_WIDTH;
+      gameCanvas.height = GAME_HEIGHT;
+      gameCanvas.style.display = "block";
+      gameCanvas.style.margin = "auto";
+      gameCanvas.style.border = "1px solid white";
+      gameCanvas.style.marginTop = "100px";
+      document.body.appendChild(gameCanvas);
+      gameContext = gameCanvas.getContext("2d");
+      startDate = moment().valueOf();
+
+      document.onkeypress = onDocument_KeyPressed;
+
+      setInterval(draw, 1000 / TARGET_FPS);
+      setInterval(update, 1000 / TARGET_FPS);
+    }
+
+    function draw() {
+      clearDraw();
+      drawFPS();
+      //************
+      drawCharacter();
+      drawPlatform();
+    }
+
+    function clearDraw() {
+      gameContext.fillStyle = "cornflowerblue";
+      gameContext.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    }
+
+    function drawFPS() {
+        gameContext.font = "30px Verdana";
+        gameContext.fillStyle = "white";
+        gameContext.fillText(lastFPS, 0, 30);
+    }
+
+    function drawCharacter() {
+      gameContext.strokeStyle = "white";
+      gameContext.beginPath();
+      gameContext.arc(charX  + scale, charY + scale, scale, 0, 2 * Math.PI);
+      gameContext.stroke();
+    }
+
+    function drawPlatform() {
+        gameContext.strokeStyle = "white";
+        gameContext.strokeRect(platformX, platformY, platformW, platformH);
+    }
+
+    function update() {
+      updateGameTime();
+      updateFPS();
+      updateGravity();
+    }
+
+    function updateGameTime() {
+      gameDeltaT = moment().valueOf() - lastGameUpdate;
+      elapasedT += gameDeltaT;
+      lastGameUpdate = moment().valueOf();
+    }
+
+
+    function updateFPS() {
+        currentFPS++;
+        var currentMoment = moment().valueOf();
+        if (currentMoment - lastFPSDate >= 1000) {
+          lastFPSDate = currentMoment;
+          lastFPS = currentFPS;
+          currentFPS = 0;
+        }
+    }
+
+    function updateGravity() {
+      if(!isCharacterCollideWithPlatform())
+      {
+        // charSpeedY += (GRAVITY / (1000 / TARGET_FPS)) / 2;
+        var normalizedT = elapasedT / 10;
+        console.log(charSpeedY);
+        var newCharY = (charSpeedY * normalizedT * -1) - (0.5 * GRAVITY * normalizedT * normalizedT);
+        charSpeedY = ((newCharY - charY) * -1) / (gameDeltaT * 10);
+        charY = newCharY;
+      }
+      else {
+        charY = platformY - platformH - scale;
+      }
+    }
+
+    function applyJumpForce() {
+      charSpeedY = 0.9;
+    }
+
+    function onDocument_KeyPressed(e) {
+      if(e.keyCode == 32) {
+        applyJumpForce();
+      }
+    }
+
+    function isCharacterCollideWithPlatform() {
+      return charY + scale >= platformY - platformH;
+    }
+
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>
