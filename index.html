@@ -37,13 +37,18 @@
     const TARGET_FPS = 60;
     var charRadius = 50;
     var scale = 1 * charRadius;
-    var charX = 0;
+    var charX = 5;
     var charY = 0;
     var charVelocityY = 0;
-    var platformX = 0;
-    var platformY = GAME_HEIGHT - 50;
-    var platformW = 400;
-    var platformH = 50;
+    var charVelocityX = 0;
+    var platform1X = 0;
+    var platform1Y = GAME_HEIGHT - 50;
+    var platform1W = 400;
+    var platform1H = 50;
+    var platform2X = GAME_WIDTH - 400;
+    var platform2Y = GAME_HEIGHT - 100;
+    var platform2W = 400;
+    var platform2H = 50;
 
 
 
@@ -98,7 +103,8 @@
 
     function drawPlatform() {
       gameContext.strokeStyle = "white";
-      gameContext.strokeRect(platformX, platformY, platformW, platformH);
+      gameContext.strokeRect(platform1X, platform1Y, platform1W, platform1H);
+      gameContext.strokeRect(platform2X, platform2Y, platform2W, platform2H);
     }
 
     function update() {
@@ -125,26 +131,43 @@
     }
 
     function updateGravity() {
-      if (charY + scale > platformY - platformH && charX + scale < platformW) {
-        charVelocityY = -charVelocityY * 0.8 //RESISTANCE.
+      if (isCharacterCollideWithPlatform()) {
+        charVelocityY = -charVelocityY * 0.8; //RESISTANCE.
       }
-      else {
+      else if (!isCharacterCollideWithPlatform()) {
         charVelocityY += GRAVITY * gameDeltaT;
       }
       charY += charVelocityY * gameDeltaT;
     }
 
     function applyJumpForce() {
-      charVelocityY = 1
+      charVelocityY = 1;
       charY -= charVelocityY * gameDeltaT;
+
     }
 
     function moveLeft() {
-      charX -= 15;
+      if (charX + scale < 0 + scale) {
+        charVelocityX = -charVelocityX * 0.6;
+      }
+
+      else {
+        charVelocityX += 3 * .09;
+      }
+
+      charX -= (charVelocityX * gameDeltaT) * 0.98;
     }
 
     function moveRight() {
-      charX += 15;
+      if (charX + scale > 1024 - scale) {
+        charVelocityX = -charVelocityX * 0.6;
+      }
+
+      else {
+        charVelocityX += 3 * .09;
+      }
+
+      charX += (charVelocityX * gameDeltaT) * 0.98;
     }
 
     function onDocument_KeyPressed(e) {
@@ -152,16 +175,18 @@
       if (e.keyCode == 32) {
         applyJumpForce();
       }
-      if (e.keyCode == 65) {
+      if (e.keyCode == 97) {
         moveLeft();
       }
-      if (e.keyCode == 68) {
+      if (e.keyCode == 100) {
         moveRight();
       }
     }
 
-    function isCharacterCollideWithPlatform() { //question later.
-      return charY + scale > platformY - platformH;
+    function isCharacterCollideWithPlatform() {
+      return charY + scale > platform1Y - platform1H && (charX + scale > platform1X || charX + scale < platform1W);
+      return charY + scale > platform2Y - platform2H && (charX + scale > platform2X || charX + scale < platform2W);
+
     }
 
   </script>
