@@ -33,7 +33,7 @@
     var startDate;
     const GAME_WIDTH = 1024;
     const GAME_HEIGHT = 768;
-    const GRAVITY = 0.000981 // / by 10000
+    const GRAVITY = 0.00098;
     const TARGET_FPS = 60;
     var charRadius = 50;
     var scale = 1 * charRadius;
@@ -93,7 +93,7 @@
       gameContext.strokeStyle = "white";
       gameContext.beginPath();
       gameContext.arc(charX + scale, charY + scale, scale, 0, 2 * Math.PI);
-      gameContext.stroke();
+      gameContext.fill();
     }
 
     function drawPlatform() {
@@ -125,46 +125,43 @@
     }
 
     function updateGravity() {
-      if (!isCharacterCollideWithPlatform()) {
-        charVelocityY += GRAVITY * gameDeltaT;
-        charY += charVelocityY * gameDeltaT;
+      if (charY + scale > platformY - platformH && charX + scale < platformW) {
+        charVelocityY = -charVelocityY * 0.8 //RESISTANCE.
       }
       else {
-        charY = platformY - platformH - scale;
+        charVelocityY += GRAVITY * gameDeltaT;
       }
+      charY += charVelocityY * gameDeltaT;
     }
 
     function applyJumpForce() {
-      charVelocityY -= GRAVITY * gameDeltaT;
-      charY -= 100 + (charVelocityY * gameDeltaT);
+      charVelocityY = 1
+      charY -= charVelocityY * gameDeltaT;
     }
 
     function moveLeft() {
-      charX -= 5;
+      charX -= 15;
     }
 
     function moveRight() {
-      charX += 5;
+      charX += 15;
     }
 
     function onDocument_KeyPressed(e) {
       console.log(e.keyCode)
       if (e.keyCode == 32) {
-        console.log(e)
         applyJumpForce();
       }
-      if (e.keyCode == 97) {
-        console.log(e)
+      if (e.keyCode == 65) {
         moveLeft();
       }
-      if (e.keyCode == 100) {
-        console.log(e)
+      if (e.keyCode == 68) {
         moveRight();
       }
     }
 
-    function isCharacterCollideWithPlatform() {
-      return charY + scale >= platformY - platformH && charX + scale >= platformX && charX < platformW;
+    function isCharacterCollideWithPlatform() { //question later.
+      return charY + scale > platformY - platformH;
     }
 
   </script>
